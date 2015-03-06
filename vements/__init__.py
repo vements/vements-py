@@ -18,7 +18,7 @@ if config.auth:
     config.auth = tuple(config.auth.split(':'))
 
 
-class client:
+class Client:
     timeout = (1.5, 7.5)
 
     def __init__(self, auth=None, url=None):
@@ -57,7 +57,7 @@ class client:
             raise ServerError(response=res)
 
     def profile(self, slug):
-        return profile(self.auth, self.url+'/profile/'+slug)
+        return Profile(self.auth, self.url+'/profile/'+slug)
 
     @staticmethod
     def method_pair(path, klass):
@@ -68,30 +68,30 @@ class client:
         return node, leaf
 
 
-class participant(client):
+class Participant(Client):
     pass
 
 
-class achievement(client):
+class Achievement(Client):
     pass
 
 
-class scoreboard(client):
+class ScoreBoard(Client):
     pass
 
 
-class app(client):
-    achievements, achievement = client.method_pair('achievement', achievement)
-    participants, participant = client.method_pair('participant', participant)
-    scoreboards, scoreboard = client.method_pair('scoreboard', scoreboard)
+class App(Client):
+    achievements, achievement = Client.method_pair('achievement', Achievement)
+    participants, participant = Client.method_pair('participant', Participant)
+    scoreboards, scoreboard = Client.method_pair('scoreboard', ScoreBoard)
 
 
-class namespace(client):
-    apps, app = client.method_pair('app', app)
+class Namespace(Client):
+    apps, app = Client.method_pair('app', App)
 
 
-class profile(client):
-    namespaces, namespace = client.method_pair('namespace', namespace)
+class Profile(Client):
+    namespaces, namespace = Client.method_pair('namespace', Namespace)
 
 
 class ClientError(requests.RequestException):
@@ -100,3 +100,6 @@ class ClientError(requests.RequestException):
 
 class ServerError(requests.RequestException):
     pass
+
+
+client = Client # made to look like a function.  because.
